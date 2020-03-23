@@ -1,19 +1,21 @@
-require 'rspec'
-require 'update_quality'
+require_relative 'award'
+require_relative 'update_quality'
 
 describe '#update_quality' do
 
-  context 'Given a single award' do
+  context 'Given a single awards' do
     let(:initial_expires_in) { 5 }
     let(:initial_quality) { 10 }
     let(:award) { Award.new(name, initial_expires_in, initial_quality) }
 
     context 'when quality is updated' do
       before do
+        puts award.quality
         update_quality([award])
+        puts award.quality
       end
 
-      context 'given a normal award' do
+      context 'given a normal awards' do
         let(:name) { 'NORMAL ITEM' }
 
         before do
@@ -50,7 +52,7 @@ describe '#update_quality' do
         end
 
         context 'before expiration date' do
-          specify { expect(award.quality).to eq(initial_quality+1) }
+          specify { expect(award.quality).to eq(initial_quality + 3) }
 
           context 'with max quality' do
             let(:initial_quality) { 50 }
@@ -60,7 +62,7 @@ describe '#update_quality' do
 
         context 'on expiration date' do
           let(:initial_expires_in) { 0 }
-          specify { expect(award.quality).to eq(initial_quality+2) }
+          specify { expect(award.quality).to eq(initial_quality + 3) }
 
           context 'near max quality' do
             let(:initial_quality) { 49 }
@@ -75,11 +77,11 @@ describe '#update_quality' do
 
         context 'after expiration date' do
           let(:initial_expires_in) { -10 }
-          specify { expect(award.quality).to eq(initial_quality+2) }
+          specify { expect(award.quality).to eq(0) }
 
           context 'with max quality' do
             let(:initial_quality) { 50 }
-            specify { expect(award.quality).to eq(initial_quality) }
+            specify { expect(award.quality).to eq(0) }
           end
         end
       end
@@ -167,7 +169,7 @@ describe '#update_quality' do
 
         context 'on expiration date' do
           let(:initial_expires_in) { 0 }
-          specify { expect(award.quality).to eq(0) }
+          specify { expect(award.quality).to eq(initial_quality + 3) }
         end
 
         context 'after expiration date' do
@@ -176,8 +178,7 @@ describe '#update_quality' do
         end
       end
 
-      context 'given a Blue Star award' do
-        before { pending }
+      context 'given a Blue Star awards' do
         let(:name) { 'Blue Star' }
         before { award.expires_in.should == initial_expires_in-1 }
 
@@ -214,7 +215,7 @@ describe '#update_quality' do
     end
   end
 
-  context 'Given several award' do
+  context 'Given several awards' do
     let(:awards) {
       [
         Award.new('NORMAL ITEM', 5, 10),
@@ -230,7 +231,7 @@ describe '#update_quality' do
       specify { expect(awards[0].quality).to eq(9) }
       specify { expect(awards[0].expires_in).to eq(4) }
 
-      specify { expect(awards[1].quality).to eq(11) }
+      specify { expect(awards[1].quality).to eq(13) }
       specify { expect(awards[1].expires_in).to eq(2) }
     end
   end
